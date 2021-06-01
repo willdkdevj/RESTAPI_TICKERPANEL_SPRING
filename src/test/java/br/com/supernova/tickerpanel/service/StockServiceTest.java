@@ -15,7 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -78,5 +81,37 @@ public class StockServiceTest {
         when(repository.findByName(CHECKED_TICKER)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.checkStockName(CHECKED_TICKER));
+    }
+
+    @Test
+    void whenEnteringValidStockIDThenReturnResponseEntityOK() {
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
+
+        when(repository.findById(builderDTO.getId())).thenReturn(Optional.of(stockEntity));
+
+        StockDTO returnedStockDTO = service.checkStockID(builderDTO.getId());
+
+        assertThat(returnedStockDTO.getId(), is(equalTo(stockEntity.getId())));
+    }
+
+    @Test
+    void whenEnteringInvalidStockIDThenAnExceptionShouldBeThrow() {
+        when(repository.findById(INVALID_ROOM_ID)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.checkStockID(INVALID_ROOM_ID));
+    }
+
+    @Test
+    void whenAskedToPresentAllStocksThenResponseEntityOK() {
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
+
+        when(repository.findAll()).thenReturn(Collections.singletonList(stockEntity));
+
+        List<StockDTO> listDTOS = service.listAllStocks();
+
+        assertThat(listDTOS, is(not(empty())));
+        assertThat(listDTOS.get(0), is(equalTo(builderDTO)));
     }
 }

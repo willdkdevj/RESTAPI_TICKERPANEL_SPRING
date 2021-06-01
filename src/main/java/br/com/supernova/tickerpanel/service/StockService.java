@@ -9,7 +9,9 @@ import br.com.supernova.tickerpanel.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,10 @@ public class StockService {
         return mapper.toDTO(returnedStock);
     }
 
+    public StockDTO checkStockID(Long id) {
+        return mapper.toDTO(checkIfThereIsARecordByID(id));
+    }
+
     private void checkIfThereIsARecordByName(String nameStock) throws ResourceAlreadyRegisteredException {
         Optional<Stock> returnedStock = repository.findByName(nameStock);
         if(returnedStock.isPresent()){
@@ -44,5 +50,13 @@ public class StockService {
         return repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(id)
         );
+    }
+
+
+    public List<StockDTO> listAllStocks() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
