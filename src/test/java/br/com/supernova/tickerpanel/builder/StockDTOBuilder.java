@@ -9,24 +9,24 @@ import java.time.LocalDate;
 public class StockDTOBuilder {
 
     @Builder.Default
-    private static final Long id = 1L;
+    private static final Long ID = 1L;
 
     @Builder.Default
-    private static final String name = "SANB11";
+    private static final String NAME = "SANB11";
 
     @Builder.Default
-    private static final String company = "Banco Santander Brasil";
+    private static final String COMPANY = "Banco Santander Brasil";
 
     @Builder.Default
-    private static final Double price = 41.22D;
+    private static final Double PRICE = 41.22D;
 
     @Builder.Default
-    private static final LocalDate date = LocalDate.of(2021, 5, 31);
+    private static final LocalDate DATE = LocalDate.of(2021, 5, 31);
 
     @Builder.Default
-    private static final Double variation = 1.03D;
+    private static final Double VARIATION = 1.03D;
 
     public StockDTO toStockDTO(){
-        return new StockDTO(id, name, company, price, date, variation);
+        return new StockDTO(ID, NAME, COMPANY, PRICE, DATE, VARIATION);
     }
 }
