@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: tickerpanel
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/tickerpanel
+    username: root
+    password: dkrock!@182
+
+  jpa:
+    show-sql: true # Mostra o código SQL invocado
+    database-platform: org.hibernate.dialect.MySQLDialect
+    generate-ddl: false # Permitir gerar tabelas automaticamente
+    properties:
+      hibernate:
+        ddl-auto: none # Permitir criar regras, views, proocedures
+        format_sql: true # Informa ao Hibernate para formatar o código SQL
+
+server:
+  port: 8080
+  servlet:
+    context-path: /tickers-panel
