@@ -24,7 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StockServiceTest {
@@ -113,5 +113,47 @@ public class StockServiceTest {
 
         assertThat(listDTOS, is(not(empty())));
         assertThat(listDTOS.get(0), is(equalTo(builderDTO)));
+    }
+
+    @Test
+    void whenStockIDAndStockDTOProvidedThenReturnResponseEntityOK() {
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
+
+        when(repository.findById(builderDTO.getId())).thenReturn(Optional.of(stockEntity));
+        when(repository.save(any(Stock.class))).thenReturn(stockEntity);
+
+        StockDTO updatedStock = service.updateStock(builderDTO.getId(), builderDTO);
+
+        assertThat(updatedStock.getName(), is(equalTo(stockEntity.getName())));
+        assertThat(updatedStock.getCompany(), is(equalTo(stockEntity.getCompany())));
+    }
+
+    @Test
+    void whenStockInvalidIDAndStockDTOProvidedThenAnNotFoundException() throws ResourceNotFoundException {
+        when(repository.findById(INVALID_ROOM_ID)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.updateStock(INVALID_ROOM_ID, StockDTOBuilder.builder().build().toStockDTO()));
+    }
+
+    @Test
+    void whenStockDTOIDProvidedToDeleteThenReturnResponseEntityOK() {
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
+
+        when(repository.findById(builderDTO.getId())).thenReturn(Optional.of(stockEntity));
+        doNothing().when(repository).delete(stockEntity);
+
+        service.deleteStock(builderDTO.getId());
+
+        verify(repository, times(1)).findById(builderDTO.getId());
+        verify(repository, times(1)).delete(stockEntity);
+    }
+
+    @Test
+    void whenStockDTOInvalidIDProvidedToDeleteThenAnNotFoundException() {
+        when(repository.findById(INVALID_ROOM_ID)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.deleteStock(INVALID_ROOM_ID));
     }
 }

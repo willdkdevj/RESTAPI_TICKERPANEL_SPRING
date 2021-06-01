@@ -39,6 +39,28 @@ public class StockService {
         return mapper.toDTO(checkIfThereIsARecordByID(id));
     }
 
+    public List<StockDTO> listAllStocks() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public StockDTO updateStock(Long id, StockDTO builderDTO) throws ResourceNotFoundException {
+        Stock returnedStock = checkIfThereIsARecordByID(id);
+        Stock stock = mapper.toEntity(builderDTO);
+
+        stock.setId(returnedStock.getId());
+
+        Stock updatedStock = repository.save(stock);
+        return mapper.toDTO(updatedStock);
+    }
+
+    public void deleteStock(Long id) {
+        Stock returnedStock = checkIfThereIsARecordByID(id);
+        repository.delete(returnedStock);
+    }
+
     private void checkIfThereIsARecordByName(String nameStock) throws ResourceAlreadyRegisteredException {
         Optional<Stock> returnedStock = repository.findByName(nameStock);
         if(returnedStock.isPresent()){
@@ -52,11 +74,4 @@ public class StockService {
         );
     }
 
-
-    public List<StockDTO> listAllStocks() {
-        return repository.findAll()
-                .stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-    }
 }
