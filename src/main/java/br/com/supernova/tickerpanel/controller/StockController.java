@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(value = "/api/v1")
 @RequiredArgsConstructor
@@ -42,7 +42,8 @@ public class StockController {
         return ResponseEntity.ok(service.checkStockID(id));
     }
 
-    @PostMapping(value = "/stock-create", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //@PostMapping(value = "/stock-create", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/stock-create")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<StockDTO> registerStockDTO(@Valid @RequestBody StockDTO stockDTO) throws ResourceAlreadyRegisteredException {
         return ResponseEntity.ok(service.createStock(stockDTO));
