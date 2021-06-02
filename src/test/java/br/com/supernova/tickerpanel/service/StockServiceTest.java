@@ -7,8 +7,6 @@ import br.com.supernova.tickerpanel.mapper.StockMapper;
 import br.com.supernova.tickerpanel.model.dto.StockDTO;
 import br.com.supernova.tickerpanel.model.entity.Stock;
 import br.com.supernova.tickerpanel.repository.StockRepository;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -121,7 +118,7 @@ public class StockServiceTest {
         StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
         Stock stockEntity = mapper.toEntity(builderDTO);
 
-        when(repository.findByAllToday(LocalDate.now())).thenReturn(Optional.of(Collections.singletonList(stockEntity)));
+        when(repository.findByToday(LocalDate.now())).thenReturn(Optional.of(Collections.singletonList(stockEntity)));
 
         List<StockDTO> listDTOS = service.listAllStocksToday();
 
@@ -131,7 +128,7 @@ public class StockServiceTest {
 
     @Test
     void whenAskedToPresentAllStocksTodayThenAnNotFoundExceptionShouldBeThrow() {
-        when(repository.findByAllToday(LocalDate.now())).thenReturn(Optional.empty());
+        when(repository.findByToday(LocalDate.now())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.listAllStocksToday());
     }

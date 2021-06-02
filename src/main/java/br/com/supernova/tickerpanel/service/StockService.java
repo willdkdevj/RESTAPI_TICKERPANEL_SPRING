@@ -54,7 +54,7 @@ public class StockService {
 
     @Transactional(readOnly = true)
     public List<StockDTO> listAllStocksToday(){
-        List<Stock> stockList = repository.findByAllToday(LocalDate.now()).orElseThrow(ResourceNotFoundException::new);
+        List<Stock> stockList = repository.findByToday(LocalDate.now()).orElseThrow(ResourceNotFoundException::new);
         return stockList.stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
