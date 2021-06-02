@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
+    public ResourceNotFoundException(){
+        super("Found no stock added today!");
+    }
+
     public ResourceNotFoundException(Long id){
         super(String.format("The stock with ID - %d was not found in the system!", id));
     }

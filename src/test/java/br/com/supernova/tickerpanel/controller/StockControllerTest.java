@@ -66,7 +66,10 @@ public class StockControllerTest {
                 .content(jsonAsString(builderDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(builderDTO.getName())))
-                .andExpect(jsonPath("$.company", is(builderDTO.getCompany())));
+                .andExpect(jsonPath("$.company", is(builderDTO.getCompany())))
+                .andExpect(jsonPath("$.price", is(builderDTO.getPrice())))
+                .andExpect(jsonPath("$.date", is(builderDTO.getDate())))
+                .andExpect(jsonPath("$.variation", is(builderDTO.getVariation())));
                 
     }
 

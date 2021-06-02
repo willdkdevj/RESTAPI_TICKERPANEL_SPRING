@@ -8,7 +8,9 @@ import br.com.supernova.tickerpanel.model.entity.Stock;
 import br.com.supernova.tickerpanel.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,13 +23,15 @@ public class StockService {
 
     private final StockRepository repository;
 
+    @Transactional
     public StockDTO createStock(StockDTO stockDTO) throws ResourceAlreadyRegisteredException {
-        checkIfThereIsARecordByName(stockDTO.getName());
+        checkIfThereIsARecordByNameAndDate(stockDTO.getName(), stockDTO.getDate());
         Stock stockEntity = mapper.toEntity(stockDTO);
         Stock saveStock = repository.save(stockEntity);
         return mapper.toDTO(saveStock);
     }
 
+    @Transactional(readOnly = true)
     public StockDTO checkStockName(String name) {
         Stock returnedStock = repository.findByName(name).orElseThrow(
                 () -> new ResourceNotFoundException(name)
@@ -35,10 +39,12 @@ public class StockService {
         return mapper.toDTO(returnedStock);
     }
 
+    @Transactional(readOnly = true)
     public StockDTO checkStockID(Long id) {
         return mapper.toDTO(checkIfThereIsARecordByID(id));
     }
 
+    @Transactional(readOnly = true)
     public List<StockDTO> listAllStocks() {
         return repository.findAll()
                 .stream()
@@ -46,23 +52,34 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
-    public StockDTO updateStock(Long id, StockDTO builderDTO) throws ResourceNotFoundException {
-        Stock returnedStock = checkIfThereIsARecordByID(id);
+    @Transactional(readOnly = true)
+    public List<StockDTO> listAllStocksToday(){
+        List<Stock> stockList = repository.findByAllToday(LocalDate.now()).orElseThrow(ResourceNotFoundException::new);
+        return stockList.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public StockDTO updateStock(StockDTO builderDTO) throws ResourceNotFoundException {
+        Optional<Stock> returnedStock = repository.findByStockUpdate(builderDTO.getName(), builderDTO.getDate(), builderDTO.getId());
+        if(returnedStock.isPresent())
+            throw new ResourceNotFoundException(builderDTO.getName());
+
         Stock stock = mapper.toEntity(builderDTO);
-
-        stock.setId(returnedStock.getId());
-
         Stock updatedStock = repository.save(stock);
+
         return mapper.toDTO(updatedStock);
     }
 
+    @Transactional
     public void deleteStock(Long id) {
         Stock returnedStock = checkIfThereIsARecordByID(id);
         repository.delete(returnedStock);
     }
 
-    private void checkIfThereIsARecordByName(String nameStock) throws ResourceAlreadyRegisteredException {
-        Optional<Stock> returnedStock = repository.findByName(nameStock);
+    private void checkIfThereIsARecordByNameAndDate(String nameStock, LocalDate dateTicker) throws ResourceAlreadyRegisteredException {
+        Optional<Stock> returnedStock = repository.findByNameAndDate(nameStock, dateTicker);
         if(returnedStock.isPresent()){
             throw new ResourceAlreadyRegisteredException(nameStock);
         }

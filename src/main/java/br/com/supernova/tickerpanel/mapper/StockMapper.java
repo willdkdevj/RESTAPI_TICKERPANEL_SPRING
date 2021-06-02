@@ -11,7 +11,7 @@ public interface StockMapper {
 
     StockMapper INSTANCE = Mappers.getMapper(StockMapper.class);
 
-    @Mapping(target = "date", source = "date", dateFormat = "dd/MM/yyyy")
+    //@Mapping(target = "date", source = "date", dateFormat = "dd/MM/yyyy")
     Stock toEntity(StockDTO stockDTO);
 
     StockDTO toDTO(Stock stock);

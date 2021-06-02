@@ -44,7 +44,7 @@ public class StockServiceTest {
         StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
         Stock stockEntity = mapper.toEntity(builderDTO);
 
-        when(repository.findByName(builderDTO.getName())).thenReturn(Optional.empty());
+        when(repository.findByNameAndDate(builderDTO.getName(), builderDTO.getDate())).thenReturn(Optional.empty());
         when(repository.save(any(Stock.class))).thenReturn(stockEntity);
 
         StockDTO savedStock = service.createStock(builderDTO);
@@ -58,7 +58,7 @@ public class StockServiceTest {
         StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
         Stock stockEntity = mapper.toEntity(builderDTO);
 
-        when(repository.findByName(builderDTO.getName())).thenReturn(Optional.of(stockEntity));
+        when(repository.findByNameAndDate(builderDTO.getName(), builderDTO.getDate())).thenReturn(Optional.of(stockEntity));
 
         assertThrows(ResourceAlreadyRegisteredException.class, () -> service.createStock(builderDTO));
     }
@@ -116,14 +116,14 @@ public class StockServiceTest {
     }
 
     @Test
-    void whenStockIDAndStockDTOProvidedThenReturnResponseEntityOK() {
+    void whenUpdateStockDTOProvidedThenReturnResponseEntityOK() {
         StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
         Stock stockEntity = mapper.toEntity(builderDTO);
 
-        when(repository.findById(builderDTO.getId())).thenReturn(Optional.of(stockEntity));
+        when(repository.findByStockUpdate(builderDTO.getName(), builderDTO.getDate(), builderDTO.getId())).thenReturn(Optional.empty());
         when(repository.save(any(Stock.class))).thenReturn(stockEntity);
 
-        StockDTO updatedStock = service.updateStock(builderDTO.getId(), builderDTO);
+        StockDTO updatedStock = service.updateStock(builderDTO);
 
         assertThat(updatedStock.getName(), is(equalTo(stockEntity.getName())));
         assertThat(updatedStock.getCompany(), is(equalTo(stockEntity.getCompany())));
@@ -131,9 +131,12 @@ public class StockServiceTest {
 
     @Test
     void whenStockInvalidIDAndStockDTOProvidedThenAnNotFoundException() throws ResourceNotFoundException {
-        when(repository.findById(INVALID_ROOM_ID)).thenReturn(Optional.empty());
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
 
-        assertThrows(ResourceNotFoundException.class, () -> service.updateStock(INVALID_ROOM_ID, StockDTOBuilder.builder().build().toStockDTO()));
+        when(repository.findByStockUpdate(builderDTO.getName(), builderDTO.getDate(), builderDTO.getId())).thenReturn(Optional.of(stockEntity));
+
+        assertThrows(ResourceNotFoundException.class, () -> service.updateStock(builderDTO));
     }
 
     @Test
