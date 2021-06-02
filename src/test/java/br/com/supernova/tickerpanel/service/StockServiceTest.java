@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -113,6 +114,26 @@ public class StockServiceTest {
 
         assertThat(listDTOS, is(not(empty())));
         assertThat(listDTOS.get(0), is(equalTo(builderDTO)));
+    }
+
+    @Test
+    void whenAskedToPresentAllStocksTodayThenResponseEntityOK() {
+        StockDTO builderDTO = StockDTOBuilder.builder().build().toStockDTO();
+        Stock stockEntity = mapper.toEntity(builderDTO);
+
+        when(repository.findByAllToday(LocalDate.now())).thenReturn(Optional.of(Collections.singletonList(stockEntity)));
+
+        List<StockDTO> listDTOS = service.listAllStocksToday();
+
+        assertThat(listDTOS, is(not(empty())));
+        assertThat(listDTOS.get(0), is(equalTo(builderDTO)));
+    }
+
+    @Test
+    void whenAskedToPresentAllStocksTodayThenAnNotFoundExceptionShouldBeThrow() {
+        when(repository.findByAllToday(LocalDate.now())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.listAllStocksToday());
     }
 
     @Test

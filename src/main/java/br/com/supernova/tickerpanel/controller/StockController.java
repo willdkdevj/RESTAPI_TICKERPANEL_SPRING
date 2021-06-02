@@ -27,6 +27,11 @@ public class StockController {
         return ResponseEntity.ok(service.listAllStocks());
     }
 
+    @GetMapping(value = "/stocks-today", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StockDTO>> returnAllStocksToday(){
+        return ResponseEntity.ok(service.listAllStocksToday());
+    }
+
     @GetMapping(value = "/stock-name/{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StockDTO> searchStockDTOByName(@PathVariable String name) {
         return ResponseEntity.ok(service.checkStockName(name));
