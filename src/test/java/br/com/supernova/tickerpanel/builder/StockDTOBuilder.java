@@ -4,6 +4,7 @@ import br.com.supernova.tickerpanel.model.dto.StockDTO;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Builder
 public class StockDTOBuilder {

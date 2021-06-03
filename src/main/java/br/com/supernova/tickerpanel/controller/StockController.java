@@ -45,12 +45,12 @@ public class StockController {
     @PostMapping(value = "/stock-create")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<StockDTO> registerStockDTO(@Valid @RequestBody StockDTO stockDTO) throws ResourceAlreadyRegisteredException {
-        return ResponseEntity.ok(service.createStock(stockDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createStock(stockDTO));
     }
 
     @PutMapping(value = "/stock-update/{id}")
     public ResponseEntity<StockDTO> updateStockDTO(@Valid @RequestBody StockDTO stockDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.updateStock(stockDTO));
+        return ResponseEntity.ok(service.updateStock(stockDTO));
     }
 
     @DeleteMapping(value = "/stock-delete/{id}")
