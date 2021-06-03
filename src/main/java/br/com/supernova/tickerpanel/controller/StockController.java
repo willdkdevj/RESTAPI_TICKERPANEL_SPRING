@@ -5,7 +5,6 @@ import br.com.supernova.tickerpanel.model.dto.StockDTO;
 import br.com.supernova.tickerpanel.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +47,7 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createStock(stockDTO));
     }
 
-    @PutMapping(value = "/stock-update/{id}")
+    @PutMapping(value = "/stock-update")
     public ResponseEntity<StockDTO> updateStockDTO(@Valid @RequestBody StockDTO stockDTO) {
         return ResponseEntity.ok(service.updateStock(stockDTO));
     }

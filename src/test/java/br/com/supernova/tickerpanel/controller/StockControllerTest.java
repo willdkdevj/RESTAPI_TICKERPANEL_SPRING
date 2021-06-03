@@ -1,7 +1,6 @@
 package br.com.supernova.tickerpanel.controller;
 
 import br.com.supernova.tickerpanel.builder.StockDTOBuilder;
-import br.com.supernova.tickerpanel.exception.ResourceAlreadyRegisteredException;
 import br.com.supernova.tickerpanel.exception.ResourceNotFoundException;
 import br.com.supernova.tickerpanel.model.dto.StockDTO;
 import br.com.supernova.tickerpanel.service.StockService;
@@ -20,12 +19,9 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import java.util.Collections;
 
 import static br.com.supernova.tickerpanel.utils.UtilJasonToString.jsonAsString;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -180,4 +176,29 @@ public class StockControllerTest {
                 .andExpect(status().isNotFound());
 
     }
+
+    @Test
+    void whenPUTIsCalledThenAStockDTOIsUpdated() throws Exception {
+        StockDTO updateDTO = StockDTOBuilder.builder().build().toStockDTO();
+
+        when(service.updateStock(updateDTO)).thenReturn(updateDTO);
+
+        mockMvc.perform(put(URL_PATH + PRE_PATH_UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonAsString(updateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(updateDTO.getName())))
+                .andExpect(jsonPath("$.company", is(updateDTO.getCompany())))
+                .andExpect(jsonPath("$.price", is(updateDTO.getPrice())))
+                .andExpect(jsonPath("$.variation", is(updateDTO.getVariation())));
+    }
+
+    @Test
+    void whenDELETEIsCalledThenAnMapStatusReturned() throws Exception {
+        mockMvc.perform(delete(URL_PATH + PRE_PATH_DELETE + "/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+    }
+
 }
